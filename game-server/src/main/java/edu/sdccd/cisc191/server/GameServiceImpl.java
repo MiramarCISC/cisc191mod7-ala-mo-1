@@ -51,6 +51,9 @@ public class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase {
                 .setMatchId(matchId)
                 .setPlayerName(match.playerName())
                 .setOpponentName(match.opponentName())
+                .setSummary(buildJoinSummary(
+                        matchId, match.playerName(), match.opponentName(), difficulty, ranked
+                ))
                 .setMessage("Joined " + match.matchType() + " match " + matchId
                         + " on " + difficulty + " difficulty. Click Play Match to let the server choose a winner.")
                 .build();
@@ -80,7 +83,30 @@ public class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase {
             String difficulty,
             boolean ranked
     ) {
-        return "TODO: build join summary";
+        String joinSummaryPlayerName;
+        String joinSummaryOpponentName;
+        String joinSummaryDifficulty;
+        String joinSummaryRanked;
+        
+        if (matchId == null || matchId.trim().isEmpty()) { return "No match"; }
+
+        if (playerName == null || playerName.trim().isEmpty()) { joinSummaryPlayerName = "Player"; }
+        else { joinSummaryPlayerName = playerName.trim(); }
+
+        if (opponentName == null || opponentName.trim().isEmpty()) { joinSummaryOpponentName = "Bot"; }
+        else { joinSummaryOpponentName = opponentName.trim(); }
+
+        if (difficulty == null || difficulty.trim().isEmpty()) { joinSummaryDifficulty = "Normal"; }
+        else { joinSummaryDifficulty = difficulty.trim(); }
+
+        if (ranked == true) { joinSummaryRanked = "ranked"; }
+        else { joinSummaryRanked = "casual"; }
+        
+        return "Match " + matchId + ": " 
+                + joinSummaryPlayerName + " vs "
+                + joinSummaryOpponentName + " ("
+                + joinSummaryDifficulty + ", "
+                + joinSummaryRanked + ")";
     }
 
     @Override

@@ -210,7 +210,22 @@ public class GameController {
      * - Trim playerName and difficulty.
      */
     public static String buildJoinLogMessage(String playerName, String difficulty, boolean ranked) {
-        return "TODO: build join log message";
+        String joinPlayerMessage;
+        String joinDifficultyMessage;
+        String joinRankedMessage;
+        
+        if (playerName == null || playerName.trim().isEmpty()) { joinPlayerMessage = "Player"; }
+        else { joinPlayerMessage = playerName.trim(); }
+
+        if (difficulty == null || difficulty.trim().isEmpty()) { joinDifficultyMessage = "Normal"; }
+        else { joinDifficultyMessage = difficulty.trim(); }
+
+        if (ranked) { joinRankedMessage = "ranked"; }
+        else { joinRankedMessage = "casual"; }
+
+        return "Joining " + joinRankedMessage + " match as " 
+            + joinPlayerMessage + " on " 
+            + joinDifficultyMessage + " difficulty...";
     }
 
     /**
@@ -223,9 +238,10 @@ public class GameController {
      * - Otherwise, schedule it with Platform.runLater(action).
      */
     public static void runOnFxThread(Runnable action) {
-        if (action != null) {
-            action.run();
-        }
+        if (action == null) { return; }
+
+        if (Platform.isFxApplicationThread()) { action.run(); }
+        else { Platform.runLater(action); }
     }
 
     private void runInBackground(Task<?> task) {

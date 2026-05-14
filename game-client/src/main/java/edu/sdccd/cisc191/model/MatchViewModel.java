@@ -43,7 +43,7 @@ public class MatchViewModel {
         this.winnerName = winnerName == null ? "" : winnerName;
     }
 
-    public int getCompletedMatchCount() {
+    public synchronized int getCompletedMatchCount() {
         return completedMatchCount;
     }
 
@@ -60,8 +60,8 @@ public class MatchViewModel {
      * - Mark the match as over.
      * - Protect shared state from race conditions.
      */
-    public void recordCompletedMatchThreadSafely(String winnerName) {
-        completedMatchCount = completedMatchCount + 1;
+    public synchronized void recordCompletedMatchThreadSafely(String winnerName) {
+        completedMatchCount++;
         setWinnerName(winnerName);
         matchOver = true;
     }
@@ -88,10 +88,23 @@ public class MatchViewModel {
      * - Use "ranked" when ranked is true, otherwise "casual".
      */
     public String buildMatchSummary(String difficulty, boolean ranked) {
-        return "TODO: build match summary";
+        if (getMatchId() == null || getMatchId().isEmpty()) { return "No match"; }
+        
+        String matchDifficulty;
+        String matchRank;
+
+        if (difficulty == null || difficulty.trim().isEmpty()) { matchDifficulty = "Normal"; }
+        else { matchDifficulty = difficulty.trim(); }
+
+        if (ranked == true) { matchRank = "ranked";} 
+        else { matchRank = "casual"; }
+        
+        return ("Match " + getMatchId() + ": "
+            + getPlayer().getName() + " vs " + getOpponent().getName()
+            + " (" + matchDifficulty + ", " + matchRank + ")");
     }
 
-    public void resetLocalState() {
+    public synchronized void resetLocalState() {
         matchId = null;
         player.setName("Player");
         opponent.setName("Opponent");

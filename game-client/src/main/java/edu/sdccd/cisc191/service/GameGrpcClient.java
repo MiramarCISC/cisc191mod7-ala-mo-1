@@ -26,23 +26,19 @@ public class GameGrpcClient {
     }
 
     public Task<JoinMatchResponse> joinMatchTask(
-            String playerName,
-            String difficulty,
-            boolean ranked
-    ) {
-        return new Task<>() {
-            @Override
-            protected JoinMatchResponse call() {
-                JoinMatchRequest request = JoinMatchRequest.newBuilder()
-                        .setPlayerName(playerName)
-                        .setDifficulty(difficulty)
-                        .setRanked(ranked)
-                        .build();
-
-                return blockingStub.joinMatch(request);
-            }
-        };
-    }
+        String playerName,
+        String difficulty,
+        boolean ranked
+        ) {
+            return new Task<>() {
+                @Override
+                protected JoinMatchResponse call() {
+                    JoinMatchRequest request = buildJoinMatchRequest(playerName, difficulty, ranked);
+                    
+                    return blockingStub.joinMatch(request); 
+                }
+            };
+        }
 
     /**
      * TODO 4: Complete this client-side gRPC helper, then use it from joinMatchTask.
@@ -55,10 +51,19 @@ public class GameGrpcClient {
      * - Preserve the ranked value.
      */
     public static JoinMatchRequest buildJoinMatchRequest(String playerName, String difficulty, boolean ranked) {
+        String matchPlayerName;
+        String matchDifficultyName;
+
+        if (playerName == null || playerName.trim().isEmpty()) { matchPlayerName = "Player"; }
+        else { matchPlayerName = playerName.trim(); }
+
+        if (difficulty == null || difficulty.trim().isEmpty()) { matchDifficultyName = "Normal"; }
+        else { matchDifficultyName = difficulty.trim(); }
+
         return JoinMatchRequest.newBuilder()
-                .setPlayerName("TODO")
-                .setDifficulty("TODO")
-                .setRanked(false)
+                .setPlayerName(matchPlayerName)
+                .setDifficulty(matchDifficultyName)
+                .setRanked(ranked)
                 .build();
     }
 
